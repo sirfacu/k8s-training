@@ -1,0 +1,24 @@
+apiVersion: apps/v1 #aqui se agrega apps/v1 en vez de v1 porq en la api group del kubectl api-resources indica eso
+kind: ReplicaSet   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: replicaset-test #Este sera el nombre del replicaSet
+  labels:
+    app: front
+spec: #aqui se colocan las espcificaciones del replica set no de los pod
+  replicas: 3 #aqui definimos la cantidad de replicas
+  selector:  # En este apartado vamos a especificar que tag quiero para mis pod y que el replicaset sera propietario
+    matchLabels: 
+      app: pod-label
+  #Aqui ya empezamos las espcificaciones de los pods
+  template:
+    metadata: 
+      labels:
+        app: pod-label #debe coincidir con el del replicaSet que puse arriba
+    spec:
+      containers:
+      - name: cont1
+        image: python:3.6-alpine
+        command: ['sh', '-c',  'echo cont1 >> index.html && python -m http.server 8080']
+      - name: cont2
+        image: python:3.6-alpine
+        command: ['sh', '-c',  'echo cont2 >> index.html && python -m http.server 8081'] 

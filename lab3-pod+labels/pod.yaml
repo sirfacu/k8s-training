@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: pitones1
+  labels:
+    app: front
+    env: dev
+spec:
+  containers:
+  - name: cont1
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: pitones2
+  labels:
+    app: back
+    env: dev
+spec:
+  containers:
+  - name: cont1
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: pitones3
+  labels:
+    app: back
+    env: dev
+spec:
+  containers:
+  - name: cont1
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: pitones4
+  labels:
+    app: front
+    env: dev
+spec:
+  containers:
+  - name: cont1
+    image: nginx:alpine

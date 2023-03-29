@@ -1,0 +1,35 @@
+#lab7
+# Deployment let us to generate a kind of template to my Resplicaset always is available and also in case that I need to apply changes  
+# the deployment itself could perform it. this changes will apply creating the next rs version and increasing the pod to the desired state
+# at the same time that the previous version is decreasing the pods
+
+apiVersion: apps/v1 
+kind: Deployment   #You can show different kind from kubectl api-resources KIND column
+
+
+
+metadata:
+  name: replicaset-test #this is the replicaSet name
+  labels:
+    app: front
+spec: #this section configure the specs to the replicaset
+  replicas: 3 #Number of replicas that RS should have
+  selector:  # Here we configure the owner and match labels to be part of this RS, is like define the owner
+    matchLabels: 
+      app: pod-label
+  #since here we configure the pod's specs
+  template:
+    metadata: 
+      labels:
+        app: pod-label #might match with replicaset label created above
+    spec:
+      containers:
+      - name: front1
+        image: python:3.7-alpine
+        command: ['sh', '-c',  'echo cont1 >> index.html && python -m http.server 8080']
+      - name: front2
+        image: python:3.7-alpine
+        command: ['sh', '-c',  'echo cont2 >> index.html && python -m http.server 8081'] 
+
+#firts time I ran using 3.6-alpine and the second time I used 3.7-alpine
+# R/ 
