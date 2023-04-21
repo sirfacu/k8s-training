@@ -1,0 +1,120 @@
+#lab9
+# we are going to improve a rollback due in this case to a wrong tag image version
+# after do it we are going to rollback the application to the previsous revision or whatever you want sungin this command:
+# kubectl rollout undo deploy-test --to-revision=4
+#
+# OUTPUT
+#facu@minikube:~/curso-k8s/facu-git/k8s-training/lab9-HowToDoARollback$ kubectl rollout undo deployment deploy-test --to-revision=4
+#deployment.apps/deploy-test rolled back
+# Here how see the events when run a describe command
+# facu@minikube:~/curso-k8s/facu-git/k8s-training/lab9-HowToDoARollback$ kubectl describe pod deploy-test-57467c6994-jxnrd
+# Name:             deploy-test-57467c6994-jxnrd
+# Namespace:        default
+# Priority:         0
+# Service Account:  default
+# Node:             minikube/192.168.58.2
+# Start Time:       Thu, 20 Apr 2023 18:57:12 -0500
+# Labels:           appName=front
+#                   pod-template-hash=57467c6994
+# Annotations:      <none>
+# Status:           Running
+# IP:               10.244.0.81
+# IPs:
+#   IP:           10.244.0.81
+# Controlled By:  ReplicaSet/deploy-test-57467c6994
+# Containers:
+#   front1:
+#     Container ID:  docker://466fb33ff8a871d4af15c68eca0b241efe843400e1f411e8cb35d40af6154dbe
+#     Image:         python:latest
+#     Image ID:      docker-pullable://python@sha256:f7382f4f9dbc51183c72d621b9c196c1565f713a1fe40c119d215c961fa22815
+#     Port:          300/TCP
+#     Host Port:     0/TCP
+#     Command:
+#       sh
+#       -c
+#       echo cont1 >> index.html && python -m http.server 8080
+#     State:          Running
+#       Started:      Thu, 20 Apr 2023 18:57:14 -0500
+#     Ready:          True
+#     Restart Count:  0
+#     Environment:    <none>
+#     Mounts:
+#       /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-btqdj (ro)
+#   front2:
+#     Container ID:  docker://8c259a6bf8c47e497a1b29c92081926eb2b36a3e714fb342866d8be20f541aca
+#     Image:         python:3.6-alpine
+#     Image ID:      docker-pullable://python@sha256:579978dec4602646fe1262f02b96371779bfb0294e92c91392707fa999c0c989
+#     Port:          82/TCP
+#     Host Port:     0/TCP
+#     Command:
+#       sh
+#       -c
+#       echo cont2 >> index.html && python -m http.server 8081
+#     State:          Running
+#       Started:      Thu, 20 Apr 2023 18:57:14 -0500
+#     Ready:          True
+#     Restart Count:  0
+#     Environment:    <none>
+#     Mounts:
+#       /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-btqdj (ro)
+# Conditions:
+#   Type              Status
+#   Initialized       True 
+#   Ready             True 
+#   ContainersReady   True 
+#   PodScheduled      True 
+# Volumes:
+#   kube-api-access-btqdj:
+#     Type:                    Projected (a volume that contains injected data from multiple sources)
+#     TokenExpirationSeconds:  3607
+#     ConfigMapName:           kube-root-ca.crt
+#     ConfigMapOptional:       <nil>
+#     DownwardAPI:             true
+# QoS Class:                   BestEffort
+# Node-Selectors:              <none>
+# Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+#                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+# Events:
+#   Type    Reason     Age   From               Message
+#   ----    ------     ----  ----               -------
+#   Normal  Scheduled  91s   default-scheduler  Successfully assigned default/deploy-test-57467c6994-jxnrd to minikube
+#   Normal  Pulling    91s   kubelet            Pulling image "python:latest"
+#   Normal  Pulled     90s   kubelet            Successfully pulled image "python:latest" in 1.156095337s (1.156103971s including waiting)
+#   Normal  Created    90s   kubelet            Created container front1
+#   Normal  Started    89s   kubelet            Started container front1
+#   Normal  Pulled     89s   kubelet            Container image "python:3.6-alpine" already present on machine
+#   Normal  Created    89s   kubelet            Created container front2
+#   Normal  Started    89s   kubelet            Started container front2
+
+
+
+apiVersion: apps/v1 
+kind: Deployment   #You can show different kind from kubectl api-resources KIND column
+metadata:
+  name: deploy-test #this is the Deployment name
+  labels:
+    appName: front
+spec: #this section configure the specs to the replicaset
+  replicas: 3 #Number of replicas that RS should have
+  selector:  # Here we configure the owner and match labels to be part of this RS, is like define the owner
+    matchLabels: 
+      appName: front
+  #since here we configure the pod's specs
+  template:
+    metadata: 
+      labels:
+        appName: front #might match with replicaset label created above
+      annotations:
+        kubernetes.io/change-cause: "fake image"
+    spec: #here pod's specs
+      containers:
+      - name: front1
+        image: python:lat
+        command: ['sh', '-c',  'echo cont1 >> index.html && python -m http.server 8080']
+        ports:
+          - containerPort: 8280
+      - name: front2
+        image: python:3.6-alpine
+        command: ['sh', '-c',  'echo cont2 >> index.html && python -m http.server 8081']
+        ports:
+          - containerPort: 82

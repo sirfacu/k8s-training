@@ -26,6 +26,3 @@ spec: #this section configure the specs to the replicaset
       - name: front2
         image: python:3.7-alpine
         command: ['sh', '-c',  'echo cont2 >> index.html && python -m http.server 8081'] 
-
-#firts time I ran using 3.6-alpine and the second time I used 3.7-alpine
-# R/ 

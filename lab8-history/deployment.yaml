@@ -1,7 +1,16 @@
-#lab7
-# Deployment let us to generate a kind of template to my Resplicaset always is available and also in case that I need to apply changes  
-# the deployment itself could perform it. this changes will apply creating the next rs version and increasing the pod to the desired state
-# at the same time that the previous version is decreasing the pods
+#lab8
+# changing values iunto the manifest and then apply those changes and execute this command:
+# kubectl rollout history deployment deploy-test
+# also I included annotation sentence to show the behavior using the above command
+#
+# OUTPUT
+#facu@minikube:~/curso-k8s/facu-git/k8s-training/lab8-history$ kubectl rollout history deployment deploy-test
+#deployment.apps/deploy-test 
+#REVISION  CHANGE-CAUSE
+#1         <none>
+#2         kubectl apply --filename=deployment.yaml --record=true
+#3         changing port to python image to 8280
+
 
 apiVersion: apps/v1 
 kind: Deployment   #You can show different kind from kubectl api-resources KIND column
@@ -19,12 +28,17 @@ spec: #this section configure the specs to the replicaset
     metadata: 
       labels:
         appName: front #might match with replicaset label created above
+      annotations:
+        kubernetes.io/change-cause: "changing port to python image to 8280"
     spec: #here pod's specs
       containers:
       - name: front1
         image: python:latest
         command: ['sh', '-c',  'echo cont1 >> index.html && python -m http.server 8080']
+        ports:
+          - containerPort: 8280
       - name: front2
         image: python:3.6-alpine
         command: ['sh', '-c',  'echo cont2 >> index.html && python -m http.server 8081']
-
+        ports:
+          - containerPort: 82
