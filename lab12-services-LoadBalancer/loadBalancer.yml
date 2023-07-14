@@ -1,0 +1,39 @@
+#Este tipo de servicio unicamente sirve para nube creando un LB
+#por debajo el crea un NodePort para la comunicacion con el LB
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: svc-app-back 
+  labels:
+    appName: backend-app
+#this section configure the specs to the replicaset
+spec: 
+  replicas: 3 #Number of replicas that RS should have
+  selector:  # Here we configure the owner and match labels to be part of this RS, is like define the owner
+    matchLabels: 
+      appName: backend-app
+#since here we configure the pod's specs
+  template:
+    metadata: 
+      labels:
+        appName: backend-app #might match with replicaset label created above
+    spec: #here pod's specs
+      containers:
+      - name: backend1
+        image: nginx:latest
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firts-svc-back
+  labels: 
+    app: svc-backend-app 
+spec:
+  type: NodePort #added when we were reviewing the different service types
+  selector:
+    appName: backend-app
+  ports:
+    - protocol: TCP
+      port:   8080 #the port to the service
+      targetPort: 80 # the port set up in my pod
