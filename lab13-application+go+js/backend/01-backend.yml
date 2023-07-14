@@ -1,0 +1,37 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: dep-golang-app
+  labels:
+    appName: go-backend
+#this section configure the specs to the replicaset
+spec: 
+  replicas: 3 #Number of replicas that RS should have
+  selector:  # Here we configure the owner and match labels to be part of this RS, is like define the owner
+    matchLabels: 
+      appName: go-backend
+#since here we configure the pod's specs
+  template:
+    metadata: 
+      labels:
+        appName: go-backend #might match with replicaset label created above
+    spec: #here pod's specs
+      containers:
+      - name: gopodback
+        image: k8s-golangapp
+        imagePullPolicy: IfNotPresent
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dep-golang-app
+  labels: 
+    app: srv-backend-app 
+spec:
+  selector:
+    appName: go-backend
+  ports:
+    - protocol: TCP
+      port:   80 #the port to the service
+      targetPort: 9090 # the port set up in my pod

@@ -28,8 +28,11 @@ metadata:
   labels: 
     app: front-app  #
 spec:
+  type: ClusterIP #added when we were reviewing the different service types
+  #type: ClusterIP #added when we were reviewing the different service typestype: ClusterIP #added when we were reviewing the different service types
+  #type: ClusterIP #added when we were reviewing the different service typestype: ClusterIP #added when we were reviewing the different service types
   selector:
-    app: front-app
+    appName: front-app
   ports:
     - protocol: TCP
       port:   8080 #the port to the service
